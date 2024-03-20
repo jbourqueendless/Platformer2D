@@ -1,8 +1,8 @@
 extends Camera2D
-## Cámara principal para escenarios.
+## Main Camera for Scenes.
 ##
-## Mueve la cámara para seguir al personaje principal (usando un movimiento suavizado)
-## Movimiento de cámara: https://docs.google.com/document/d/1kHbZN0nhy9GFL3zyO4tTZK4lqELZ3YDkbpxj6XVEkq8/edit?usp=sharing
+## Move the camera to follow the main character (using smooth motion)
+## Camera Movement: https://docs.google.com/document/d/1kHbZN0nhy9GFL3zyO4tTZK4lqELZ3YDkbpxj6XVEkq8/edit?usp=sharing
 
 
 # Referencia al personaje principal
