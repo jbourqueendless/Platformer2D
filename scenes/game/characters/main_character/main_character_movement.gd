@@ -1,9 +1,9 @@
 extends Node2D
-## Controlador de movimiento y animación de un personaje.
+## Movement and animation controller for a character.
 ##
-## Detecta eventos de teclado para poder mover un personaje por un escenario
-## y ajustar animaciones según el movimiento
-## Movimiento básica de personaje: https://docs.google.com/document/d/1c9XXznR1KBJSr0jrEWjYIqfFuNGCGP2YASkXsFgEayU/edit
+## Detects keyboard events to move a character around a scene
+## and adjust animations according to movement
+## Basic character movement: https://docs.google.com/document/d/1c9XXznR1KBJSr0jrEWjYIqfFuNGCGP2YASkXsFgEayU/edit
  
 
 @export var character: CharacterBody2D # Referencia al personaje a mover
