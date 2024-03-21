@@ -16,7 +16,7 @@ extends Node2D
 var gravity = 650 # Gravedad para el personaje
 var velocity = 100 # Velocidad de movimiento en horizontal
 var jump = 220 # Capacidad de salto, entre mayor el número más se puede saltar
-# Mapa de movimientos del personaje
+# Character movement map
 var _movements = {
 	IDLE = "default",
 	IDLE_WITH_SWORD = "idle_with_sword",
@@ -39,7 +39,7 @@ var bombing = false # Define si esta atacando
 var _is_playing: String = "" # Define si se esta reproducionedo el sonido
 var turn_side: String = "right" # Define si se esta reproducionedo el sonido
 
-# Precargamos los sonidos de saltar
+# We preload the jump sounds
 var _jump_sound = preload("res://assets/sounds/jump.mp3")
 var _run_sound = preload("res://assets/sounds/running.mp3")
 var _dead_sound = preload("res://assets/sounds/dead.mp3")
@@ -47,48 +47,48 @@ var _male_hurt_sound = preload("res://assets/sounds/male_hurt.mp3")
 var _hit_sound = preload("res://assets/sounds/slash.mp3")
 
 
-# Función de inicialización
+# Initialization function
 func _ready():
 	main_animation.play(_current_movement)
-	# Si no hay un personaje, deshabilitamos la función: _physics_process
+	# If there is no character, we disable the _physics_process function
 	if not character:
 		set_physics_process(false)
 
 
-# Función de ejecución de físicas
+# Physics execution function
 func _physics_process(_delta):
 	_move(_delta)
 	
 
 func _unhandled_input(event):
-	# Cuando se presiona la tecla x, atacamos	
+	# When the x key is pressed, we attack	
 	if event.is_action_released("hit"):
 		character.velocity.x = 0
 		_current_movement = _movements.ATTACK
-	# Cuando se presiona la tecla b, lanzamos bomba
+	# When the b key is pressed, we throw a bomb
 	elif event.is_action_released("bomb"):
 		_current_movement = _movements.BOMB
 	_set_animation()
 
 
-# Función de movimiento general del personaje
+# General movement function of the character
 func _move(delta):
-	# Cuando se presiona la tecla (flecha izquierda), movemos el personaje a la izquierda
+	# When the left arrow key is pressed, we move the character to the left
 	if Input.is_action_pressed("izquierda"):
 		character.velocity.x = -velocity
 		_current_movement = _movements.LEFT_WITH_SWORD	
 		turn_side = "left"
-	# Cuando se presiona la tecla (flecha derecha), movemos el personaje a la derecha
+	# When the right arrow key is pressed, we move the character to the right
 	elif Input.is_action_pressed("derecha"):
 		character.velocity.x = velocity
 		_current_movement = _movements.RIGHT_WITH_SWORD
 		turn_side = "right"
-	# Cuando no presionamos teclas, no hay movimiento	
+	# When no keys are pressed, there is no movement	
 	else:
 		character.velocity.x = 0
 		_current_movement = _movements.IDLE	
 	
-	# Cuando se presiona la tecla (espacio), hacemos animación de salto
+	# When the space key is pressed, we do the jump animation
 	if Input.is_action_just_pressed("saltar"):
 		if character.is_on_floor():
 			_current_movement = _movements.JUMP_WITH_SWORD
@@ -100,89 +100,89 @@ func _move(delta):
 
 	_apply_gravity(delta)
 	
-	if _died: # Si el personaje murió, no se podrá mover en el eje X
+	if _died: # If the character died, it cannot move on the X axis
 		character.velocity.x = 0
 	
 	_set_animation()
-	# Función de godot para mover y aplicar física y colisiones
+	# Godot function to move and apply physics and collisions
 	character.move_and_slide()
 
 
-# Controla la animación según el movimiento del personaje
+# Controls the animation according to the character's movement
 func _set_animation():
-	# Si esta atacando no interrumpimos la animació	
+	# If it's attacking, we don't interrupt the animation
 	if attacking or bombing:
 		return
-	# Personaje murio
+	# If the character died
 	if _died:
 		main_animation.play(_movements.DEAD_HIT)
 		return
 	if _is_jumping:	
-		# Movimiento de salto (animación de "salto")
+		# Jump movement (jump animation)
 		if character.velocity.y >= 0:
-			# Estamos cayendo
+			# We are falling
 			main_animation.play(_movements.FALL_WITH_SWORD)
 		else:
-			# Estamos subiendo
+			# We are ascending
 			main_animation.play(_movements.JUMP_WITH_SWORD)
 	elif _current_movement == _movements.ATTACK:
-		# Atacamos
+		# We attack
 		attacking = true
 		main_animation.play(_movements.ATTACK)
 		_play_sound(_hit_sound)
-		# Agregamos el effecto especial
+		# We add the special effect
 		_play_sword_effect()
 	elif _current_movement == _movements.BOMB:
-		# Lanzamos bomba
+		# We throw a bomb
 		bombing = true
 		main_animation.play(_movements.BOMB)
 	elif _current_movement == _movements.RIGHT_WITH_SWORD:
-		# Movimiento hacia la derecha (animación "correr" no volteada)
+		# Movement to the right (unflipped "run" animation)
 		main_animation.play(_movements.RIGHT_WITH_SWORD)
 		main_animation.flip_h = false
 		_collision.position.x = abs(_collision.position.x)
 		_effect_sword.position.x = abs(_effect_sword.position.x)
 		_effect_sword.scale.x = abs(_effect_sword.scale.x)
 	elif _current_movement == _movements.LEFT_WITH_SWORD:
-		# Movimiento hacia la izquierda (animación "correr" volteada)
+		# Movement to the left (flipped "run" animation)
 		main_animation.play(_movements.RIGHT_WITH_SWORD)
 		main_animation.flip_h = true
 		_collision.position.x = - abs(_collision.position.x)
 		_effect_sword.position.x = - abs(_effect_sword.position.x)
 		_effect_sword.scale.x = - abs(_effect_sword.scale.x)
 	else:
-		# Movimiento por defecto (animación de "reposo")
+		# Default movement (idle animation)
 		main_animation.play(_movements.IDLE_WITH_SWORD)
-		# Pausamos el sonido
+		# We pause the sound
 		audio_player.stop()
 		_is_playing = ""
 
 
-# Función que aplica gravedad de caída o salto
+# Function that applies gravity for falling or jumping
 func _apply_gravity(delta):
 	var v = character.velocity
 	
-	# El salto solo se ejecuta 1 vez, en ese momento hacemos que el personaje salte
+	# The jump is executed only once, at that moment we make the character jump
 	if _current_movement == _movements.JUMP_WITH_SWORD and not _died:
-		# Saltamos, solo si el personaje no ha muerto
+		# We jump, only if the character has not died
 		v.y = -jump
 	else:
-		# Aplicación de gravedad (aceleración en la caida)
+		# Application of gravity (acceleration in the fall)
 		v.y += gravity * delta
-		# Después de un salto, validamos cuando volvemos a tocar el suelo para poder volver a saltar
+		# After a jump, we validate when we touch the ground again to be able to jump again
 		if character.is_on_floor():
-			# Reseteamos variables de salto
+			# We reset jump variables
 			_is_jumping = false
 			_jump_count = 0
-	# Aplicamos el vector de velocidad al personaje
+	# We apply the velocity vector to the character
 	character.velocity = v
 	
 func die():
-	# Seteamos la variable de morir averdadero
+	# We set the die variable to true
 	_died = true
 
 
-# Recibir daño
+# Receiving damage
 func hit(value: int):
 	if _died:
 		return
@@ -191,21 +191,21 @@ func hit(value: int):
 	_play_sound(_male_hurt_sound)
 	main_animation.play("hit_with_sword")
 	
-	# Bajamos vida y validamos si el personaje ha perdido
+	# We decrease life and validate if the character has lost
 	if HealthDashboard.life == 0:
 		_died = true
 	else:
 		pass
-		# Animación de golpe
+		# Hit animation
 
 
 func _on_animation_animation_finished():
-	# Validamos si la animación es de morir
+	# We validate if the animation is of dying
 	if main_animation.get_animation() == 'dead_hit':
-		# Validamos si el sonido ya esta sonando
+		# We validate if the sound is already playing
 		if _is_playing != "_dead_sound":
 			_is_playing = "_dead_sound"
-			# Reproducimos el sonido
+			# We play the sound
 			_play_sound(_dead_sound)
 	elif main_animation.get_animation() == _movements.ATTACK:
 		attacking = false
@@ -214,42 +214,42 @@ func _on_animation_animation_finished():
 
 
 func _on_animation_frame_changed():	
-	# Si la animación es de atacar habilitamos el colicionador
+	# If the animation is of attacking we enable the collider
 	if main_animation.animation == "attack_2" and main_animation.frame == 1:
 		_collision.set_deferred("disabled", false)
 	else:
-		# Si la animación no es de atacar deshabilitamos el colicionador
+		# If the animation is not of attacking we disable the collider
 		_collision.set_deferred("disabled", true)
 		
 	if main_animation.animation == _movements.JUMP_WITH_SWORD:
-		# Validamos si el sonido ya esta sonando
+		# We validate if the sound is already playing
 		if _is_playing != "_jump_sound":
 			_is_playing = "_jump_sound"
-			# Reproducimos el sonido
+			# We play the sound
 			_play_sound(_jump_sound)
 	if (
 		main_animation.animation == _movements.RIGHT_WITH_SWORD 
 		or main_animation.animation == _movements.LEFT_WITH_SWORD 
 	):
-		# Validamos si el sonido ya esta sonando
+		# We validate if the sound is already playing
 		if _is_playing != "_run_sound":
 			_is_playing = "_run_sound"
-			# Reproducimos el sonido
+			# We play the sound
 			_play_sound(_run_sound)
 
 
 func _on_audio_stream_player_2d_finished():
 	if audio_player.stream == _dead_sound:
-		# Qitamos al personaje principal de la excena
+		# We remove the main character from the scene
 		self.get_parent().queue_free()
-		# Reiniciamos el juego despues de 2 segundos
+		# We restart the game after 2 seconds
 		SceneTransition.reload_scene()
 		
 		
 func _play_sound(sound):
-	# Pausamos el sonido
+	# We pause the sound
 	audio_player.stop()
-	# Reproducimos el sonido
+	# We play the sound
 	audio_player.stream = sound
 	audio_player.play()
 	
@@ -257,23 +257,23 @@ func set_disabled(disabled: bool):
 	set_physics_process(not disabled)
 	
 func set_idle():
-	# Movimiento por defecto (animación de "reposo")
+	# Default movement (idle animation)
 	main_animation.play(_movements.IDLE_WITH_SWORD)
-	# Pausamos el sonido
+	# We pause the sound
 	audio_player.stop()
 	
 func _play_sword_effect():
-	# Obtenems que efecto tenemos activo
+	# We get which effect we have active
 	var type = Global.attack_effect
 	if type == "blue_potion":
-		# Aplicamos el efecto blue_potion
+		# We apply the blue_potion effect
 		effect_animation_sword.self_modulate = Color("#70a2ff")
 	elif type == "green_bottle":
-		# Aplicamos el efecto green_bottle
+		# We apply the green_bottle effect
 		effect_animation_sword.self_modulate = Color("#80b65a")
 	else:
-		# Aplicamos el efecto predefinido
+		# We apply the predefined effect
 		effect_animation_sword.self_modulate = Color("#ffffff")
 	
-	# Reproducimos el efecto de la espada
+	# We play the sword effect
 	effect_animation_sword.play("attack_2_effect")
