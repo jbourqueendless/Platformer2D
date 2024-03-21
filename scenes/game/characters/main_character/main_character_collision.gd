@@ -1,7 +1,7 @@
 extends Node2D
-## Controlador de colisiones.
+## Collision controller.
 ##
-## Detecta eventos de colisión
+## Detects collision events
 
 @export var character: CharacterBody2D
 
@@ -13,12 +13,12 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
-	# Revisamos todas las colisiones
+	# We check all collisions
 	for i in character.get_slide_collision_count():
-		# Obtenemos la colisión
+		# We get the collision
 		var collision = character.get_slide_collision(i)
-		# Obtenemos el collider
+		# We get the collider
 		var collider = collision.get_collider()
-		# Validamos si existe el metodo hit
+		# We validate if the hit method exists
 		if collider and collider.has_method("hit"):
 			collider.hit()
