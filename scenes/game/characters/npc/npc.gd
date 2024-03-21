@@ -1,76 +1,76 @@
 extends CharacterBody2D
-## Clase que controla el comportamiento de NPC
+## Class that controls NPC behavior
 ##
-## Controla los dialogos con el personaje principal, escucha coliciones
+## Controls dialogues with the main character, listens for collisions
 
 
-# Area de contacto, para mostrar el diálogo
+# Contact area to display the dialogue
 var _npc_dialogue_area: Node2D
-# Determina el estado del diálogo (activo o inactivo)
+# Determines the state of the dialogue (active or inactive)
 var _dialog_active = false
 
 @onready var _collision = $CollisionShape2D
 @onready var _collisionListen = $Area2DListen/CollisionShape2D
 @onready var _animation = $Npc
 
-# Función de inicialización
+# Initialization function
 func _ready():
 	_npc_dialogue_area = find_child("NpcDialogueArea") # Buscamos el area de diálogo
 
 
 func _physics_process(delta):
-	# Agregamos la velocidad
+	# We add the velocity
 	velocity.y += 1000 * delta
 	move_and_slide() # Agregamos kinematica
 	if is_on_floor():
-		# Apagamos la física
+		# We turn off the physics
 		set_physics_process(false)
 	
 
-# DOCUMENTACIÓN (señales): https://docs.google.com/document/d/1bbroyXp11L4_FpHpqA-RckvFLRv3UOE-hmQdwtx27eo/edit?usp=drive_link
-# Se usa para poder "escuchar" cuando el diálgo finaliza
+# DOCUMENTATION (signals): https://docs.google.com/document/d/1bbroyXp11L4_FpHpqA-RckvFLRv3UOE-hmQdwtx27eo/edit?usp=drive_link
+# Used to "listen" when the dialogue ends
 func on_dialogue_ended(fn):
 	if _npc_dialogue_area:
 		_npc_dialogue_area.on_dialogue_ended(fn)
 
 
-# Se usa para poder "escuchar" cuando se selecciona una respuesta en el diálogo
+# Used to "listen" when a response is selected in the dialogue
 func on_response_selected(fn):
 	if _npc_dialogue_area:
 		_npc_dialogue_area.on_response_selected(fn)
 
 
-# Función que deshabilita las colisiones del NPC y también la física
+# Function that disables NPC collisions and also physics
 func disabled_collision(disabled: bool):
 	set_physics_process(not disabled)
 	_collision.disabled = disabled
 
 
-# Función para rotar la animación del NPC
+# Function to flip the NPC animation
 func flip_h(flip: bool):
 	_animation.flip_h = flip
 
 
-# Seteamos un nuevo diálogo y lo mostramos
+# We set a new dialogue and show it
 func set_and_show_dialogue(resource: DialogueResource):
 	if _npc_dialogue_area:
 		_npc_dialogue_area.set_and_show_dialogue(resource)
 
 
-# Seteamos un nuevo diálogo
+# We set a new dialogue
 func set_dialogue(resource: DialogueResource):
 	if _npc_dialogue_area:
 		_npc_dialogue_area.set_dialogue(resource)
 
 
-# Retornamos el manejador de diálogos que esté activo
+# We return the active dialogue manager
 func get_dialogue_manager():
 	if _npc_dialogue_area:
 		return _npc_dialogue_area.dialogue_manager
 
 
-# DOCUMENTACIÓN (áreas de colisión): https://docs.google.com/document/d/1FFAJSrAdE5xyY_iqUteeajHKY3tAIX5Q4TokM2KA3fw/edit?usp=drive_link
-# Función cuando un área entra en contacto con el NPC. _area: es el área que hace contacto
+# DOCUMENTATION (collision areas): https://docs.google.com/document/d/1FFAJSrAdE5xyY_iqUteeajHKY3tAIX5Q4TokM2KA3fw/edit?usp=drive_link
+# Function when an area comes into contact with the NPC. _area: is the area that makes contact
 func _on_area_2d_listen_area_exited(area):
-	# Seteamos variable del dialogo a false al abandonar el area
+	# We set the dialogue variable to false when leaving the area
 	_dialog_active = false
