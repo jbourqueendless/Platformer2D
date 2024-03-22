@@ -1,44 +1,44 @@
 extends Node2D
-## Clase que controla los eventos de diálogos de parte de NPC 
+## Class that controls NPC dialogue events 
 ## 
-## Se controlan los eventos de inicio y finalización de diálogos de parte de NPC
+## Controls the start and end events of NPC dialogues
 
 
-# Definición de la señal del diálogo
+# Dialogue signal definition
 signal talk()
 
-# Definición de la señal del diálogo terminado
+# Dialogue ended signal definition
 signal dialogue_ended()
-# Señal que escucha cuando se selecciona una respuesta de diálogo
+# Signal that listens when a dialogue response is selected
 signal response_selected(response: String)
 
-# El NPC, es el que tendrá un diálogo cargado, para comunicarse con el personaje principal
+# The NPC, which will have a dialogue loaded, to communicate with the main character
 @export var dialogue_resource: DialogueResource
-# Definición del inicio del diálogo
+# Dialogue start definition
 @export var dialogue_start: String = "start"
-# Definición del template del diálogo
+# Dialogue template definition
 @export var Balloon: PackedScene
-# Definición del area del NPC
+# NPC area definition
 @export var area: Area2D
-# Definición del area de salida del NPC
+# NPC exit area definition
 @export var area_listen: Area2D
-# Definición del personaje principal
+# Main character definition
 @export var npc: CharacterBody2D
-# Opcionalmente se puede hacer que el diálogo inicie con un evento de teclado
+# Optionally, the dialogue can be initiated with a keyboard event
 @export var show_input_key: String = ""
-# Para saber si el NPC es el "BigGuy"
+# To know if the NPC is the "BigGuy"
 @export var is_big_guy: bool = false
 
-# Definimoa el nodo del personaje principal
+# We define the main character node
 var character: Node2D
-# Indica si el diálogo se está mostrando o no
+# Indicates whether the dialogue is being displayed or not
 var _dialogue_is_visible = false
-# Indica si estamos en el area de dialogo
+# Indicates if we are in the dialogue area
 var _in_dialogue = false
 
-# Función de inicialización
+# Initialization function
 func _ready():
-	# Inicialización del diálogo
+	# Dialogue initialization
 	talk.connect(_show_dialogue)
 	area.body_entered.connect(_body_entered)
 	if !area_listen:
@@ -48,79 +48,79 @@ func _ready():
 
 func _unhandled_input(event):
 	if event.is_action_pressed(show_input_key) and character and not _dialogue_is_visible:
-		# Si presionamos la tecla definida en "show_input_key" y no se está mostrando actualmente
-		# mostramos el diálogo
-		# También la variable "character" tiene que existir, ya que indica que el
-		# personaje principal, está en el área del NPC
+		# If we press the key defined in "show_input_key" and it is not currently being displayed
+         	# we show the dialogue
+         	# Also, the "character" variable must exist, as it indicates that the
+         	# main character is in the NPC's area
 		_show_dialogue()
 
-# Seteamos un nuevo diálogo y lo mostramos
+# We set a new dialogue and show it
 func set_and_show_dialogue(resource: DialogueResource):
 	set_dialogue(resource)
 	_show_dialogue()
 
 
-# Seteamos un nuevo diálogo
+# We set a new dialogue
 func set_dialogue(resource: DialogueResource):
 	dialogue_resource = resource
 
 
-# Mostramos el diálogo
+# We show the dialogue
 func _show_dialogue():
 	if _in_dialogue:
 		return
-	# Inicialización del template del diálogo
+	# Dialogue template initialization
 	var balloon: Node = (Balloon).instantiate()
-	# Agtregar el código inicaliazado a la escena
+	# Add the initialized code to the scene
 	get_tree().current_scene.add_child(balloon)
-	# Abrir diálogo
+	# Open dialogue
 	balloon.start(dialogue_resource, dialogue_start)
 
-	# Escuchamos cuando el diálogo termine
+	# We listen when the dialogue ends
 	balloon.on_dialogue_ended(_npc_dialogue_ended)
 	balloon.on_response_selected(_on_response_selected)
-	# deshabilitamos al personaje principal
+	# We disable the main character
 	character.set_disabled(true)
 	character.set_idle()
 	_dialogue_is_visible = true
 	_in_dialogue = true
 
 
-# Se emite la señal de finalización del diálogo
+# The dialogue ended signal is emitted
 func _npc_dialogue_ended():
 	self.emit_signal("dialogue_ended")
-	# Habilitamos al personaje principal
+	# We enable the main character
 	character.set_disabled(false)
 	_dialogue_is_visible = false
 
 
-# Se emite la señal cuando se selecciona respuesta en el diálogo
+# The signal is emitted when a dialogue response is selected
 func _on_response_selected(response: String):
 	self.emit_signal("response_selected", response)
 
 
-# Se añade evento para escuchar cuando el diálogo finalice
+# We add an event to listen when the dialogue ends
 func on_dialogue_ended(fn):
 	dialogue_ended.connect(fn)
 
 
-# Se añade evento para escuchar cuando el diálogo finalice
+# We add an event to listen when a dialogue response is selected
 func on_response_selected(fn):
 	response_selected.connect(fn)
 
 
-# Detectamos cuando un "cuerpo" entra en contacto con el NPC
+# We detect when a "body" comes into contact with the NPC
 func _body_entered(body):
-	# Validamos si la colisión es con el personaje principal
+	# We validate if the collision is with the main character
 	if body.is_in_group("player"):
-		# Accedemos al script
+		# We access the script
 		character = body.get_node("MainCharacterMovement")
-		# Mostramos el diálogo (solo si no tenemos una "tecla" para activarlo)
+		# We show the dialogue (only if we don't have a "key" to activate it)
 		if show_input_key == "":
 			_show_dialogue()
-		# Buscamos el nodo de animación
+		# We search for the animation node
 		var _npc_animation: AnimatedSprite2D = npc.find_child('Npc')
-		# Giramos el personaje para ver hacia la izquierda o derecha
+		# We flip the character to look left or right
 		if body.global_position.x > area.global_position.x:
 			_npc_animation.flip_h = false
 			if is_big_guy:
@@ -131,7 +131,7 @@ func _body_entered(body):
 				_npc_animation.flip_h = false
 
 
-# Detectamos cuando un "cuerpo" sale del NPC
+# We detect when a "body" exits the NPC
 func _body_exited(_body):
 	character = null
 	_in_dialogue = false
