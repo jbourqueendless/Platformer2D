@@ -1,19 +1,19 @@
 ~ start
 
-Gran Pirata: Hola pequeño pirata. ¿En qué te puedo ayudar?.
-Pirata Malaplata: Estaba interesado en comprar un cañon destructor.
-Gran Pirata: Lo siento, por ahora solo te ofrezco bombas. 5 monedas de oro por cada una.
-Pirata Malaplata: Bueno...
-- Quiero una
+Great Pirate: Hello little pirate. How can I help you?
+Pirate Badcoin: I was interested in buying a destroyer cannon.
+Great Pirate: I'm sorry, for now, I can only offer you bombs. 5 gold coins each.
+Pirate Badcoin: Well...
+- I want one
 	=> pay
-- Quiero tres
+- I want three
 	=> pay
-- Quiero cinco
+- I want five
 	=> pay
-- Las que me alcancen con estas monedas
+- As many as these coins can get me
 	=> END
 
 ~ pay
-Gran Pirata: Sí te alcanza, ¿verdad?.
-Pirata Malaplata: ¡Claro que sí!
+Great Pirate: You can afford it, right?
+Pirate Badcoin: Of course!
 => END
