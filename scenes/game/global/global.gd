@@ -1,11 +1,11 @@
 extends Node
-## Clase que guarda las variables globales
+## Class that stores global variables
 ##
-## Se definen las variables globales que van a ser accesibles en todo el juego
+## Global variables that will be accessible throughout the game are defined here
 
 
-# Tipo de ataque aplicado
+# Type of attack applied
 var attack_effect = "normal"
 
-# Numero de ataques disponibles
+# Number of available attacks
 var number_attack = 0
