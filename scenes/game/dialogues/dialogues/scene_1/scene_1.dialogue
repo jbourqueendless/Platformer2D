@@ -1,13 +1,13 @@
 ~ dialogue_1
 
-Selena la Ballena: ¡Hola aventurero! ¿qué te trae por estos rumbos?
-Pirata Malaplata: Necesito abrir la puerta. ¿Puedes ayudarme?
-Selena la Ballena: Sí, claro. Sólo tienes que presionar la tecla [A] y la puerta se abrirá..
+Selena the Whale: Hello adventurer! What brings you around here?
+Pirate Malaplata: I need to open the door. Can you help me?
+Selena the Whale: Yes, of course. You just have to press the [A] key and the door will open.
 
-- Gracias, ¡lo intentaré!
+- Thank you, I'll give it a try!
   => dialogue_2
 
 
 ~ dialogue_2
-Selena la Ballena: ¡Bueno nos vemos!
+Selena the Whale: Alright, see you later!
 => END
