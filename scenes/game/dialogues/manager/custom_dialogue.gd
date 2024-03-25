@@ -1,26 +1,26 @@
 extends Node
-## Script para diálogos customizados
+## Script for custom dialogs
 ##
-## Crea y muestra diálogos, usando una visualización customizada
+## Create and display dialogs using a custom visualization
 
 
-# Definición del template (custom) del diálogo
+# Definition of the custom dialog template
 var _path_custom_dialogue = "res://scenes/game/dialogues/balloon/balloon.tscn"
 var _custom_dialogue: PackedScene
 
 
-# Función de inicialización
+# Initialization function
 func _ready():
 	_custom_dialogue = load(_path_custom_dialogue)
 
 
-# Creamos un nuevo diálogo y lo retornamos
+# Create a new dialog and return it
 func create():
 	var _dialog = _custom_dialogue.instantiate()
 	return _dialog
 
 
-# Mostramos el diálogo
+# Show the dialog
 func show_dialogue(_dialog: Node, _resource: DialogueResource, _start = "start"):
 	# Agregamos el diálogo a la escena actual
 	get_tree().current_scene.add_child(_dialog)
@@ -28,7 +28,7 @@ func show_dialogue(_dialog: Node, _resource: DialogueResource, _start = "start")
 	_dialog.start(_resource, _start)
 
 
-# Creamos y mostramos el diálogo (retornamos el diálogo)
+# Create and show the dialog (return the dialog)
 func create_and_show_dialogue(_resource: DialogueResource, _start = "start"):
 	var _dialog = create()
 	show_dialogue(_dialog, _resource, _start)
