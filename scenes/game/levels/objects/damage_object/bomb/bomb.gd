@@ -1,28 +1,28 @@
 extends RigidBody2D
-## Clase que controla animación y configuración de la bomba
+## Class that controls bomb animation and configuration
 ##
-## Setea la animación de la exploción
+## Sets the explosion animation
 
 
-# Precargamos la escena de la bomba
+# Preload the bomb scene
 var _bomb_effect = preload("res://scenes/game/levels/objects/damage_object/bomb/bomb_explotion.tscn")
 
-# Definimos el nodo de animación
+# Define the animation node
 @onready var _animation = $BombAnimation
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	# Esperamos 3 segundos para la exploción
+	# Wait 3 seconds for the explosion
 	await get_tree().create_timer(3).timeout
-	# Quitamos la bomba
+	# Remove the bomb
 	_animation.play("idle")
-	# Obtenemos la ultima posición
+	# Get the last position
 	var _pos = position
-	# Obtenemos la escena de exploción
+	# Get the explosion scene
 	var bomb_scene = _bomb_effect.instantiate()
-	# Ajustamos las posiciónes
+	# Adjust positions
 	bomb_scene.position = _pos
 	bomb_scene.position.y = _pos.y - 20
-	# Agregamos el efecto a la escena
+	# Add the effect to the scene
 	get_parent().add_child(bomb_scene)
 	queue_free()
