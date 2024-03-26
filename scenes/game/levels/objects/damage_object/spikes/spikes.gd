@@ -1,39 +1,39 @@
 extends Node
-## Script para objeto que hace daño "spike"
+## Script for spike damage object
 ##
-## Al entrar en contacto con este objeto, el personaje pierda toda la vida
+## Upon contact with this object, the character loses all life
 
 
-var _player_script: Node2D # Referencia al script del jugador, para poder bajar vida
+var _player_script: Node2D # Reference to the player script, to reduce life
 
-@onready var _timer = $Timer # Variable para temporizar el daño
+@onready var _timer = $Timer # Variable for timing the damage
 
 
-# Escuchamos cuando un "cuerpo" entra en el área de contacto
+# Listen for when a body enters the contact area
 func _on_area_body_entered(body):
 	if body.is_in_group("player"):
 		_player_script = body.get_node("MainCharacterMovement")
-		# "Golpeamos" al personaje
+		# "Hit" the character
 		_player_script.hit(2)
-		# Iniciamos el temporizador
+		# Start the timer
 		_timer.start()
 
 
-# Escuchamos cuando un "cuerpo" sale del área de contacto
+# Listen for when a body exits the contact area
 func _on_area_body_exited(body):
-	# Al salir de los "picos", borramos la variable para no seguir haciendo daño
+	# When leaving the spikes, clear the variable to stop causing damage
 	_player_script = null
 
 
-# Escuchamos cuando se acaba el temporizador
+# Listen for when the timer ends
 func _on_timer_timeout():
-	# Si no está activo el "script" del jugador, terminamos la función
+	# If the player script is not active, exit the function
 	if not _player_script:
 		return
-	# Si el jugador ya no tiene vida, terminamos la función
+	# If the player has no more life, exit the function
 	if HealthDashboard.life <= 0:
 		return
-	# Cuando termina el temporizador, hacemos daño al jugador
+	# When the timer ends, damage the player
 	_player_script.hit(2)
-	# Luego procedemos a inicializar de nuevo el temporizador
+	# Then restart the timer
 	_timer.start()
