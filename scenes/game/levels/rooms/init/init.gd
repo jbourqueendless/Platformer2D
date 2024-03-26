@@ -1,11 +1,11 @@
 extends Node2D
-## Clase que controla la escena inicial
+## Class that controls the initial scene
 ## 
-## Muestra el menú principal apagado desde la escena Splash
+## Displays the main menu turned off from the Splash scene
 
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	# Mostramos el menú principal
+	# Show the main menu
 	MainMenu.show_menu(true)
 
