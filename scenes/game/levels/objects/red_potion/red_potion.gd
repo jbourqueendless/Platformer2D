@@ -1,32 +1,32 @@
 extends Node2D
-## Objeto para recuperación de vida
+## Health recovery object
 ##
-## Maneja las animaciones y detección de colisiones, y agrega vida al personaje principal
+## Handles animations, collision detection, and adds life to the main character
 
 
-# Cantidad de vida a recuperar
+# Amount of life to recover
 @export var life = 4
 
-# Variables de animación de la poción y audio
+# Animation and audio variables for the potion
 @onready var _potion = $Potion
 @onready var _effect = $Effect
 @onready var _audio = $AudioStreamPlayer
 
 
-# Función de inicialización
+# Initialization function
 func _ready():
 	_potion.play() # Iniciamos con la animación del objeto
 
 
-# Detección de entrada de cuerpos al área de la poción
+# Detect bodies entering the potion's area
 func _on_area_body_entered(body):
 	if body.is_in_group("player"):
-		# Si entra el "player", sumamos vida y liberamos memoria
+		# If the player enters, add life and free memory
 		HealthDashboard.add_life(life)
 		_audio.play()
 		_potion.visible = false
 		_effect.visible = true
-		# Antes de liberar memoria, hacemos un efecto de recoger la poción
+		# Before freeing memory, animate the potion being picked up
 		_effect.play()
 		await _effect.animation_finished
 		self.queue_free() # Liberamos la memoria
