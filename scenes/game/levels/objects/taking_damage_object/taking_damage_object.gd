@@ -1,48 +1,48 @@
 extends RigidBody2D
-## Clase que controla animación y configuración de los objetos que reciben daño
+## Class that controls animation and configuration of objects that take damage
 ##
-## Setea la animación del objeto segun el nombre configurado
-## Cambia animación de idle a destruido, elimina objeto destruible de la escena
+## Sets the animation of the object according to the configured name
+## Changes animation from idle to destroyed, removes destroyable object from the scene
 
 
-# Definimos el sprite animado del objeto
+# Define the animated sprite of the object
 @onready var _animated_sprite = $AnimatedSprite2D
-# Definimos la escena de destrucción del objeto
+# Define the destruction scene of the object
 @onready var _box_destroyed = $BoxDestroyed
-# Vandera de hacer animación
+# Flag for animating
 var _do_animation = false
 
 	
-# Función de carga del nodo
+# Node initialization function
 func _ready():
-	# Reproducimos la animación idle
+	# Start playing the idle animation
 	_animated_sprite.play("idle")
-	# No mostramos la animación de destrucción
+	# Do not show the destruction animation
 	_box_destroyed.get_parent().remove_child(_box_destroyed)
 	
 
 func _on_animated_sprite_2d_animation_finished():
-	# Validamos si la animación es de pegar
+	# Check if the animation is for hitting
 	if _animated_sprite.get_animation() == 'hit':
-		# Quitamos el sprite de la caja
+		# Hide the box sprite
 		_animated_sprite.visible = false
-		# Quitamos la colisión
+		# Remove collision
 		self.set_deferred("collision_layer", 2)
-		# Agregamos la animación de destrución
+		# Add the destruction animation
 		self.add_child(_box_destroyed)
-		# Esperamos 3 segundos
+		# Wait for 3 seconds
 		await get_tree().create_timer(3).timeout
-		# Eliminamos el objeto
+		# Remove the object
 		queue_free()
 					
 	
 func do_animation():
-	# Reproducir la animación pegar
+	# Play the hit animation
 	_animated_sprite.play("hit")
 
 
 func _on_area_2d_area_entered(area):
-	# Validamos si hay colisión
+	# Check for collision
 	if area.is_in_group("hit"):
 		_collided(area)
 	elif area.is_in_group("die"):
@@ -50,28 +50,28 @@ func _on_area_2d_area_entered(area):
 
 
 func _collided(area):
-	# Seteamos la dirección de destrucción
+	# Set the destruction direction
 	if global_position.x < area.global_position.x:
 		set_direction(false)
 	else:
 		set_direction(true)
 		
-	# Validamos si estamos reproduciendo la animación
+	#  Check if we are already playing the animation
 	if not _do_animation:
-		# Seteamos que ya estamos reproduciendo la animación
+		# Set that we are now playing the animation
 		_do_animation = true
-		# Reproducimos la animación
+		# Play the animation
 		do_animation()
 		
 		
 func set_direction(left):
-	# Recorremos todos los hijos de la escena
+	# Iterate over all children of the scene
 	for child in _box_destroyed.get_children():
-		# Gardamos la velocidad definida
+		# Store the defined speed
 		var speed = abs(child.linear_velocity.x)
 		if left:
-			# Aplicamos la velocidad positiva
+			# Apply positive speed
 			child.linear_velocity.x = speed
 		else:
-			# Aplicamos la velocidad negativa
+			# Apply negative speed
 			child.linear_velocity.x = - speed
