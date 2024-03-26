@@ -5,32 +5,32 @@ extends Camera2D
 ## Camera Movement: https://docs.google.com/document/d/1kHbZN0nhy9GFL3zyO4tTZK4lqELZ3YDkbpxj6XVEkq8/edit?usp=sharing
 
 
-# Referencia al personaje principal
+# Reference to the main character
 @export var character: CharacterBody2D
 
 
-# Función de inicialización
+# Initialization function
 func _ready():
-	# Si no hay personaje, deshabilitamos _physics_process y terminamos la función
+	# If there is no character, we disable _physics_process and end the function
 	if not character:
 		set_physics_process(false)
 		return
-	# Seteamos posición inicial de la cámara
+	# We set the initial position of the camera
 	position = character.position
 
 
-# Función de ejecución de físicas
+# Physics execution function
 func _physics_process(delta):
-	# Generamos posiciones "interpoladas" (entre la posición de la cámara y el personaje)
-	# para realizar el movimiento de la cámara
-	# Validamos si el personaje esta vivo y no murio
+	# We generate "interpolated" positions (between the camera's position and the character's)
+	# to perform the camera movement
+	# We validate if the character is alive and did not die
 	if not character:
-		# Si el personaje esta muerto dejamos de seguirlo
+		# If the character is dead, we stop following it
 		return
 	var charpos = character.position
 	var new_pos = position.lerp(charpos, delta * 2.0)
-	# Ajustamos los valores a números enteros, para evitar mover la cámara demasiadas veces
+	# We adjust the values to whole numbers, to avoid moving the camera too many times
 	new_pos.x = int(new_pos.x)
 	new_pos.y = int(new_pos.y)
-	# Seteamos la nueva posición de la cámara
+	# We set the new position of the camera
 	position = new_pos
