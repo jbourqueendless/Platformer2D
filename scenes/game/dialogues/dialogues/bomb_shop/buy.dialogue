@@ -1,9 +1,9 @@
 ~ start
 
-Great Pirate: Hello little pirate. How can I help you?.
-Pirate Badcoin: I was interested in buying a destroyer cannon.
-Great Pirate: Sorry, for now I can only offer you bombs. 5 gold coins each.
-Pirate Badcoin: Well...
+Gran Pirata: Hello little pirate. How can I help you?.
+Pirata Malaplata: I was interested in buying a destroyer cannon.
+Gran Pirata: Sorry, for now I can only offer you bombs. 5 gold coins each.
+Pirata Malaplata: Well...
 - I want one
 	=> pay
 - I want three
@@ -14,6 +14,6 @@ Pirate Badcoin: Well...
 	=> END
 
 ~ pay
-Great Pirate: You can afford it, right?.
-Pirate Badcoin: Of course!
+Gran Pirata: You can afford it, right?.
+Pirata Malaplata: Of course!
 => END
