@@ -1,23 +1,24 @@
 extends AnimatedSprite2D
-## Script de objetos recolectables con diálogos
+## Script for collectible objects with dialogues
 ##
-## Este objeto se guarda en inventario. También muestra un diálogo de información del objeto
+## This object is stored in the inventory. It also shows an object information dialogue
 
 
-# Mapeo de animación y diálogos
+
+# Animation and dialogues mapping
 var _dialogues = {
 	"blue_potion": "res://scenes/game/dialogues/dialogues/power_up/blue_potion.dialogue",
 	"green_bottle": "res://scenes/game/dialogues/dialogues/power_up/green_bottle.dialogue",
 }
-var _move: Node2D # Para poder deshabilitar el personaje
+var _move: Node2D # To disable the character
 
 
-# Función de inicialización
+# Initialization function
 func _ready():
 	play()
 
 
-# Mostramos el diálogo
+# Show the dialogue
 func _show_dialogue():
 	var _resource = _dialogues[animation]
 	var _instance = load(_resource)
@@ -25,27 +26,27 @@ func _show_dialogue():
 	_dialogue.on_dialogue_ended(_on_dialogue_ended)
 
 
-# Escuchamos cuando un "cuerpo" entra al área del objeto
+# Listen for when a "body" enters the object's area
 func _on_area_body_entered(body):
 	if body.is_in_group("player"):
-		# Si es el "jugador" lo "deshabilitamos", y mostramos el diálogo
+		# If it's the "player," disable them and show the dialogue
 		_show_dialogue()
 		_move = body.get_node("MainCharacterMovement")
 		_move.set_disabled(true)
 		_move.set_idle()
 
 
-# Al recoger el objeto, hacemos animación de recoger, y al terminar activamos el personaje y liberamos memoria
+# When picking up the object, play pick-up animation, and when finished, activate the character and free memory
 func _pick_up():
-	# Sumar items de inventario
+	# Add items to the inventory
 	InventoryCanvas.add_item_by_name(animation)
-	# Hacer animación y eliminar el item de la escena
+	# Play animation and remove the item from the scene
 	play("pick_up")
 	await animation_finished
 	_move.set_disabled(false)
 	queue_free()
 
 
-# Escuchamos cuando el diálogo terminte
+# Listen for when the dialogue ends
 func _on_dialogue_ended():
 	_pick_up()
