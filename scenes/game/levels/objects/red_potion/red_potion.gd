@@ -15,7 +15,7 @@ extends Node2D
 
 # Initialization function
 func _ready():
-	_potion.play() # Iniciamos con la animación del objeto
+	_potion.play() # Start with the object's animation
 
 
 # Detect bodies entering the potion's area
@@ -29,4 +29,4 @@ func _on_area_body_entered(body):
 		# Before freeing memory, animate the potion being picked up
 		_effect.play()
 		await _effect.animation_finished
-		self.queue_free() # Liberamos la memoria
+		self.queue_free() # Free memory
