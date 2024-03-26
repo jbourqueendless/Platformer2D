@@ -1,5 +1,5 @@
 extends AnimatedSprite2D
 
-# Función de carga del nodo
+# Node loading function
 func _ready():
 	self.play()
