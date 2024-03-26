@@ -1,2 +1,2 @@
 # Platformer2D
-Juego Platformer 2D
+2D Platformer Game
