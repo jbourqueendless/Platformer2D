@@ -1,86 +1,85 @@
 extends Node2D
-## Script que controla el intercambio de monedas a bombas
+## Script that controls the exchange of coins for bombs
 ##
-## Muestra diálogos con un NPC, maneja eventos en el diálogo y agrega bombas y reduce monedas
+## Displays dialogs with an NPC, handles events in the dialog, and adds bombs while reducing coins
 
-
-# Valor de cada bomba y la moneda de pago
+# Value of each bomb and the currency
 @export var bomb_value = 5
 @export var bomb_money = "GoldCoin"
-# Diálogo de compra
+# Purchase dialog
 @export var buy_dialogue: DialogueResource
-# Diálogo de compra fallida
+# Failed purchase dialog
 @export var failed_dialogue: DialogueResource
-# Diálogo de compra realizada
+# Successful purchase dialog
 @export var success_dialogue: DialogueResource
 
 var _ended = false # Guardamos si ya terminamos la compra
 var _responses = [] # Guardamos las respuestas seleccionadas
 
-# Referencia al npc
+# Reference to the NPC
 @onready var npc = $NPC/BigGuy
 
 
-# Función de inicialización
+# Initialization function
 func _ready():
-	# Quitamos colisiones del NPC y escuchamos eventos del diálogo
+	# Disable NPC collisions and listen for dialog events
 	npc.disabled_collision(true)
 	npc.on_dialogue_ended(_on_dialogue_ended)
 	npc.on_response_selected(_on_response_selected)
 
 
-# Procedemos a comprar una cantidad de bombas
-# Si se puede comprar la cantidad, se retorna "true", de lo contrario "false"
-# Si el "amount" es "-1", se intentará comprar todas las bombas que se puedan
-# (si se compra al menos 1, se retorna "true")
+# Proceed to buy a quantity of bombs
+# If the quantity can be bought, return "true", otherwise "false"
+# If the "amount" is "-1", it will try to buy as many bombs as possible
+# (if at least 1 is bought, return "true")
 func _buy_bombs(amount: int):
-	# Cantidad de monedas disponibles
+	# Amount of available coins
 	var coins = HealthDashboard.points[bomb_money]
 	
 	if amount < 0:
-		# Calculamos la cantidad de bombas que podemos comprar
+		# Calculate the number of bombs we can buy
 		amount = int(coins / bomb_value)
 
 	if amount == 0:
 		return false # Si la cantidad es 0, retornamos "false" (no se pudo comprar)
 
-	# Compramos una cantidad específica de bombas
+	# Buy a specific quantity of bombs
 	var total = amount * bomb_value
 	if  total <= coins:
-		# Si el total a gastar es menor que el total de monedas, procedemos a comprar
-		HealthDashboard.add_points(bomb_money, -total) # Reducimos las monedas
-		HealthDashboard.add_bomb(amount) # Aumentamos las bombas
+		# If the total to spend is less than the total coins, proceed to buy
+		HealthDashboard.add_points(bomb_money, -total) # Reduce coins
+		HealthDashboard.add_bomb(amount) # Increase bombs
 		return true
 	else:
 		return false
 
 
-# Cuando terminamos el diálogo, procedemos a comprar bombas o mostrar el diálogo de finalización
+# When the dialog ends, proceed to buy bombs or show the completion dialog
 func _on_dialogue_ended():
 	if _ended:
-		# Reseteamos el diálogo y variables para "volver a comprar"
+		# Reset the dialog and variables to "buy again"
 		_ended = false
 		_responses = []
 		npc.set_dialogue(buy_dialogue)
 	else:
-		# Intentamos hacer la compra y finalizamos la conversación
+		# Try to make the purchase and end the conversation
 		_ended = true
 		var amount = _get_selected_amount()
 		var bought = _buy_bombs(amount)
 		if bought:
-			# Si se pudo comprar, mostramos el diálogo "success"
+			# If the purchase was successful, show the "success" dialog
 			npc.set_and_show_dialogue(success_dialogue)
 		else:
-			# Si no se pudo comprar, mostramos el diálogo "failed"
+			# If the purchase failed, show the "failed" dialog
 			npc.set_and_show_dialogue(failed_dialogue)
 
 
-# Sirve para guardar las respuestas seleccionadas
+# Save the selected responses
 func _on_response_selected(response: String):
 	_responses.append(response)
 
 
-# Obtenemos la cantidad a comprar, dependiendo de la respuesta seleccionada
+# Get the selected quantity to buy, depending on the selected response
 func _get_selected_amount():
 	var amount = 0
 	for r in _responses:
