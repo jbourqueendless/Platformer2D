@@ -1,19 +1,18 @@
 extends RigidBody2D
-## Clase que controla animación de la bala
+## Class that controls the bullet animation
 ##
-## Setea la animación de exploción
+## Sets the explosion animation
 
-
-# Definimos la animación del cañon
+# Define the cannon animation
 @onready var _ball_animation = $AnimatedSprite2D
 
 
 func _on_body_entered(body):
-	# Validamos si el choque es con el cañon
+	# Check if the collision is with the cannon
 	if body.is_in_group("cannon"):
 		return
 
-	# Detenemos la bala
+	# Stop the bullet
 	self.set_deferred("freeze", true)
 	self.set_deferred("sleeping", true)
 	self.set_deferred("linear_velocity.x", 0)
@@ -21,9 +20,9 @@ func _on_body_entered(body):
 	self.set_deferred("gravity_scale", 0)
 	self.collision_mask = 0
 	self.collision_layer = 0
-	# Reproducimos la animación de la exploción
+	# Play the explosion animation
 	_ball_animation.play("explosion")
 	if body.is_in_group("player"):
-		# Quitamos al personaje principal
+		# Remove the main character
 		var _move_script = body.get_node("MainCharacterMovement")
 		_move_script.hit(10)
