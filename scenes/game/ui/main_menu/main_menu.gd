@@ -1,22 +1,21 @@
 extends Node2D
-## Script de menú principal.
+## Main menu script.
 ##
-## Controlará el acceso al menú principal y a las acciones del mismo (iniciar, pantalla completa y volumen de sonidos)
-## Menú principal: https://docs.google.com/document/d/17z6OpRIyuTMBbdYGBseTlv9aqLGkM_OUsWnzCGrWyJs/edit?usp=sharing
-## Pantalla completa e iniciar juego: https://docs.google.com/document/d/1iXAeyJgSInJz_jI_zl1tHWvQ12DSI-W2FpcLWdxGre8/edit?usp=sharing
-## Control de sonidos: https://docs.google.com/document/d/1iF9UeO_rtx2qWtMxjB6LienO-kQPx3blTCgJw-aACx4/edit?usp=sharing
+## It will control access to the main menu and its actions (start, full screen, and sound volume)
+## Main menu: https://docs.google.com/document/d/17z6OpRIyuTMBbdYGBseTlv9aqLGkM_OUsWnzCGrWyJs/edit?usp=sharing
+## Full screen and start game: https://docs.google.com/document/d/1iXAeyJgSInJz_jI_zl1tHWvQ12DSI-W2FpcLWdxGre8/edit?usp=sharing
+## Sound control: https://docs.google.com/document/d/1iF9UeO_rtx2qWtMxjB6LienO-kQPx3blTCgJw-aACx4/edit?usp=sharing
 
-
-# Nivel inicial que se cargará al presionar "Iniciar" en el menú principal
+# Initial level that will be loaded when pressing "Start" in the main menu
 const PATH_LEVEL_1 = "res://scenes/game/levels/rooms/scene_1/scene_1.tscn"
 
 
-# Variables para animación de nubes
+# Variables for cloud animation
 var _parallax_1_normal = true
 var _parallax_2_normal = false
 var _started = false # Indica si ya iniciamos el juego (entramos al primer nivel)
 
-# Referencias a nodos de la escena
+# References to scene nodes
 @onready var _anim_water = $Main/World/Background/AnimWater
 @onready var _anim_ship = $Main/World/Ship/Ship
 @onready var _anim_flag = $Main/World/Ship/Flag
@@ -29,37 +28,37 @@ var _started = false # Indica si ya iniciamos el juego (entramos al primer nivel
 @onready var _game_controls = $Main/GameControls
 
 
-# Función de inicialización
+# Initialization function
 func _ready():
-	# Al cargar hacemos esta escena invisible
+	# When loaded, make this scene invisible
 	visible = true
-	# Impide que esta escena se ponga en pausa
+	# Prevent this scene from being paused
 	self.process_mode = Node.PROCESS_MODE_ALWAYS
 	#_toggle_show()
 	HealthDashboard.visible = false
-	# Iniciamoa con las animaciones
+	# Start animations
 	_anim_water.play()
 	_anim_ship.play()
 	_anim_flag.play()
 	_parallax_1.play("parallax1")
 	_parallax_2.play_backwards("parallax1")
-	# Iniciar volumen de sonidos en base al valor de los "sliders"
+	# Initialize sound volume based on the value of the "sliders"
 	_on_slider_ambient_value_changed(_slider_ambient.value)
 	_on_slider_effects_value_changed(_slider_effects.value)
 	_toggle_show()
-	# Ocultamos el canvas de los controles
+	# Hide the controls canvas
 	_game_controls.visible = false
 
-# Detecta eventos de teclado y ratón
+# Detects keyboard and mouse events
 func _unhandled_input(event):
 	if event.is_action_released("ui_cancel") and _started:
-		# Al presionar "scape" mostramos/ocultamos el menú (solo si hemos "iniciado")
+		# When pressing "escape", show/hide the menu (only if we have "started")
 		_toggle_show()
 
 
-# Se ejecuta cuando finaliza la animación de las nubes #1
+# Executes when the animation of clouds #1 finishes
 func _on_parallax_1_animation_finished(_anim_name):
-	# Hace animación de izquierda a derecha indefinidamente
+	# Makes the animation go from left to right indefinitely
 	if _parallax_1_normal:
 		_parallax_1.play_backwards("parallax1")
 		_parallax_1_normal = false
@@ -68,9 +67,9 @@ func _on_parallax_1_animation_finished(_anim_name):
 		_parallax_1_normal = true
 
 
-# Se ejecuta cuando finaliza la animación de las nubes #2
+# Executes when the animation of clouds #2 finishes
 func _on_parallax_2_animation_finished(_anim_name):
-	# Hace animación de izquierda a derecha indefinidamente
+	# Makes the animation go from left to right indefinitely
 	if _parallax_2_normal:
 		_parallax_2.play_backwards("parallax1")
 		_parallax_2_normal = false
@@ -79,12 +78,12 @@ func _on_parallax_2_animation_finished(_anim_name):
 		_parallax_2_normal = true
 
 
-# Función que mostrará u ocultará el menú principal, desmontando nodos, pausando y controlando
-# cámaras de los niveles
+# Function that will show or hide the main menu, unmounting nodes, pausing, and controlling
+# cameras of the levels
 func _toggle_show():
-	visible = not visible # Mostramos/Ocultamos el menu
-	HealthDashboard.visible = not visible # Mostramos/Ocultamos el tablero de salud
-	# Agregar o remover el nodo principal del menú principal
+	visible = not visible # Show/Hide the menu
+	HealthDashboard.visible = not visible # Show/Hide the health dashboard
+	# Add or remove the main node of the main menu
 	if visible:
 		self.add_child(_main)
 	else:
@@ -92,20 +91,20 @@ func _toggle_show():
 	
 	get_tree().paused = visible # Si estamos en el menú, pausamos
 	
-	# Buscamos el nodo principal del nivel actual "Main"
+	# Look for the main node of the current level "Main"
 	var main_node = get_tree().get_root().get_node("Main")
 	if main_node:
-		# Buscamos la cámara del nivel actual "Camera2D"
+		# Look for the camera of the current level "Camera2D"
 		var camera = main_node.find_child("Camera2D")
 		if camera:
-			# La cámara la habilitamos o deshabilitamos
+			# Enable or disable the camera
 			camera.enabled = not visible
-	# Si ya hemos iniciado, cambiamos el texto del botón a "Continuar"
+	# If we have already started, change the button text to "Continue"
 	if _started:
 		_button.text = "Continuar"
 
 
-# Evento de nodo "CheckButton" para hacer pantalla completa o en modo ventana
+ # Event of the "CheckButton" node to toggle fullscreen or windowed mode
 func _on_check_button_toggled(button_pressed):
 	if button_pressed:
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
@@ -113,31 +112,31 @@ func _on_check_button_toggled(button_pressed):
 		DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 
 
-# Se ejecuta al presionar botón "iniciar"
+# Executes when the "start" button is pressed
 func _on_button_pressed():
 	if _started:
-		# Si ya tenemos iniciado el juego, solo ocultamos el menú
+		# If the game has already started, just hide the menu
 		_toggle_show()
 	else:
-		# Si no hemos iniciado, cargamos nivel 1 y cambiamos título de boton
+		# If we haven't started, load level 1 and change the button title
 		SceneTransition.change_scene(PATH_LEVEL_1)
 		_started = true
 		#_toggle_show()
 
 
-# Cuando cambia el slider de sonido de ambiente ajustamos el volumne de ambiente
+# When the ambient sound slider changes, adjust the ambient volume
 func _on_slider_ambient_value_changed(value):
 	var bus = AudioServer.get_bus_index("Ambient")
 	AudioServer.set_bus_volume_db(bus, linear_to_db(value))
 
 
-# Cuando cambia el slider de sonido de efectos ajustamos el volumne de los efectos
+# When the effects sound slider changes, adjust the effects volume
 func _on_slider_effects_value_changed(value):
 	var bus = AudioServer.get_bus_index("Effects")
 	AudioServer.set_bus_volume_db(bus, linear_to_db(value))
 
 
-# Función para poder mostrar/ocultar el menú
+# Function to show/hide the menu
 func show_menu(_show: bool):
 	if _show:
 		if not visible:
@@ -147,18 +146,18 @@ func show_menu(_show: bool):
 			_toggle_show()
 
 
-# Función para resetear el juego
+# Function to restart the game
 func restart():
 	#_toggle_show()
 	_started = false
 	_button.text = "Iniciar"
 
 
-# Mostramos/Ocultamos la pantalla de controles
+# Show/Hide the controls screen
 func _on_show_controls_pressed():
 	_game_controls.visible = not _game_controls.visible
 
 
-# Cerramos la pantalla de controles
+# Close the controls screen
 func _on_close_controls_pressed():
 	_game_controls.visible = false
