@@ -1,15 +1,15 @@
 extends CanvasLayer
-## Script de objeto para cambio de escena.
+## Object script for scene change.
 ##
-## Es un nodo que representa un objeto y al entrar en contacto cambia a una siguiente escena
-## Cambio de escenas: https://docs.google.com/document/d/1eIBtgr8wln1pT0aZ4c-YWk_pqngyBg4HDsgdYLAXv28/edit?usp=sharing
-## Uso de señales: https://docs.google.com/document/d/1vFSOuJkBy7xr5jksgCBNaTpqJHE_K87ZNafB5ZJ_I0M/edit?usp=sharing
-## Uso de objetos para cambio de escena: https://docs.google.com/document/d/1DeAuU4dYa7DsWs-ht5Aiq4mFraOOu7hraNgIeSZn4lA/edit?usp=sharing
+## It is a node that represents an object and changes to the next scene upon contact
+## Scene change: https://docs.google.com/document/d/1eIBtgr8wln1pT0aZ4c-YWk_pqngyBg4HDsgdYLAXv28/edit?usp=sharing
+## Use of signals: https://docs.google.com/document/d/1vFSOuJkBy7xr5jksgCBNaTpqJHE_K87ZNafB5ZJ_I0M/edit?usp=sharing
+## Use of objects for scene change: https://docs.google.com/document/d/1DeAuU4dYa7DsWs-ht5Aiq4mFraOOu7hraNgIeSZn4lA/edit?usp=sharing
 
 
-# Variable (públicas) de vida y puntuación
+# Public variables for life and score
 var life = 10 # Variable para menejo de vida
-# Variable para menejo de puntos y cantidad de bombas
+# Variable for managing points and the number of bombs
 var points = {
 	"GoldCoin": 0,
 	"SilverCoin": 0,
@@ -19,28 +19,28 @@ var points = {
 	"Bomb": 0,
 }
 
-# Variables auxiliares para cambiar la puntuación de un tipo de objeto coleccionable
+# Auxiliary variables to change the score of a type of collectible object
 var _number_1: TextureRect
 var _number_2: TextureRect
 var _number_3: TextureRect
 
-# Índice desde donde empieza el número 1 en la imagen atlas de letras y números
+# Index where number 1 starts in the atlas image of letters and numbers
 var _index_number_1 = 8
-# Índice exacto del número 0, en la imagen atlas de letras y números
+# Exact index of number 0, in the atlas image of letters and numbers
 var _index_number_0 = 17
 
-# Referencias hacia la barra de vida y los números de la puntuación
+# References to the life bar and the score numbers
 @onready var bar = $LifeBar/Bar
 @onready var point_group = $PointGroup
 @onready var bomb_group = $LifeBar/Bomb
 
 
-# Función de inicialización
+# Initialization function
 func _ready():
 	self.visible = false
 
 
-# Agrega vida del personaje principal, según el valor proporcionado
+# Adds life to the main character, according to the provided value
 func add_life(value: int):
 	life += value
 	if life > 10:
@@ -48,7 +48,7 @@ func add_life(value: int):
 	_set_life_progress(life)
 
 
-# Quita vida del personaje principal, según el valor proporcionado
+# Removes life from the main character, according to the provided value
 func remove_life(value: int):
 	life -= value
 	if life < 0:
@@ -56,7 +56,7 @@ func remove_life(value: int):
 	_set_life_progress(life)
 
 
-# Agrega puntos al personaje principal (va sumando los puntos totales)	
+# Adds points to the main character (adds up the total points)	
 func add_points(type: String, value: int, group = null):
 	if not group:
 		group = point_group.find_child(type)
@@ -64,21 +64,21 @@ func add_points(type: String, value: int, group = null):
 		_number_1 = group.find_child("Number1")
 		_number_2 = group.find_child("Number2")
 		_number_3 = group.find_child("Number3")
-		# Guardamos la puntuación correspondiente
+		# We save the corresponding score
 		points[type] += value
 		_set_points(points[type])
 
 
-# Permite sumar o restar la cantidad de bombas disponibles
+# Allows adding or subtracting the number of available bombs
 func add_bomb(value: int):
 	add_points("Bomb", value, bomb_group)
 
 
-# Función para resetear los valores de vida y puntos
+# Function to reset the values of life and points
 func restart():
 	life = 10
 	_set_life_progress(life)
-	# Reseteo de todos los diferentes tipos de puntos
+	# Reset all different types of points
 	for type in points:
 		var group = point_group.find_child(type)
 		if not group:
@@ -91,23 +91,23 @@ func restart():
 		_set_points(points[type])
 
 
-# Actualiza la barra de progreso de la vida en el valor proporcionado
+# Updates the progress bar of life to the provided value
 func _set_life_progress(value: int):
 	bar.value = value
 
 
-# Actualiza el número de puntos obtenidos por el usuario (usando imágenes como números)
+# Updates the number of points obtained by the user (using images as numbers)
 func _set_points(value: int):
-	# El valor máximo a representar es 999
+	# The maximum value to represent is 999
 	if value > 999:
 		value = 999
-	var digit_str = str(value)  # Convierte el número en una cadena de texto
-	var digit_list = digit_str.split("")  # Divide la cadena en una lista de caracteres
+	var digit_str = str(value)  # Converts the number to a string
+	var digit_list = digit_str.split("") # Splits the string into a list of characters
 	
-	# Rellenamos el listado con 0 al inicio por si el número es menor que 99
+	# We fill the list with 0 at the beginning if the number is less than 99
 	if value < 100:
 		for i in range(3 - digit_list.size()):
-			digit_list.insert(0, "0") # Insertamos ceros al inicio
+			digit_list.insert(0, "0") # We insert zeros at the beginning
 	
 	for index in range(digit_list.size()):
 		var n = digit_list[index]
@@ -116,11 +116,11 @@ func _set_points(value: int):
 			region = _get_text_region(_index_number_0)
 		else:
 			var v = int(n)
-			# Generamos una posición usando el número más la posición de los digitos en el "atlas"
-			# y restamos 1, porque _index_number_1 ya tiene la posición del número 1
+			# We generate a position using the number plus the position of the digits in the "atlas"
+			# and subtract 1, because _index_number_1 already has the position of number 1
 			var position = v + _index_number_1 - 1
 			region = _get_text_region(position)
-		match index: # Actualizamos cada imagen (3 imágenes desde 0 a 2)
+		match index:  # We update each image (3 images from 0 to 2)
 			0:
 				_number_1.texture.set_region(region)
 			1:
@@ -129,8 +129,8 @@ func _set_points(value: int):
 				_number_3.texture.set_region(region)
 
 
-# Genera una región (Rect2) para la posición del caracter según el "Atlas de imágenes"
-# Se pasa posición de la letra de 0 a N, y retorna un Rect2, para dibujar la letra o número específico
+# Generates a region (Rect2) for the character position according to the "Image Atlas"
+# It takes the position of the letter from 0 to N, and returns a Rect2, to draw the specific letter or number
 func _get_text_region(position: int):
 	var w = 10 # Ancho de la letra (siempre es 10)
 	var h = 11 # Alto de la letra (siempre es 11)
@@ -139,14 +139,14 @@ func _get_text_region(position: int):
 	var delta = 20.0 # Separación entre letras
 	var column_count = 6.0 # Número de columnas según el atlas generado (en este caso 6)
 	
-	# Generamos un loop, para ir avanzando por cada región (por cada letra)
+	# We generate a loop, to move through each region (each letter)
 	for p in range(position):
 		if x / delta < column_count - 1.0:
-			# Nos vamos moviendo por las columnas
-			x += delta # Avanzamos a la siguiente columna
+			# We move through the columns
+			x += delta # We move to the next column
 		else:
-			# Si llegamos a la última columna, seguimos avanzando desde la siguiente fila
-			x = 4 # Volvemos a la primera columna
-			y += delta # Avanzamos a la siguiente fila
+			# If we reach the last column, we continue from the next row
+			x = 4 # We go back to the first column
+			y += delta # We move to the next row
 			
 	return Rect2(x, y, w, h)
