@@ -1,43 +1,43 @@
 extends CanvasLayer
-## Cambiador de escenas con transición.
+## Scene changer with transition.
 ##
-## Tiene un método para cambiar de una escena a otra usando una transición
-## Cambio de escenas: https://docs.google.com/document/d/1eIBtgr8wln1pT0aZ4c-YWk_pqngyBg4HDsgdYLAXv28/edit?usp=sharing
+## It has a method to change from one scene to another using a transition
+## Scene change: https://docs.google.com/document/d/1eIBtgr8wln1pT0aZ4c-YWk_pqngyBg4HDsgdYLAXv28/edit?usp=sharing
 
 
-# Nodo de animación
+# Animation node
 @onready var animation: AnimationPlayer = $AnimationPlayer
 
 
-# Función de inicialización
+# Initialization function
 func _ready():
-	visible = false # Al iniciar el canvas no se debe ver
+	visible = false # At the start, the canvas should not be visible
 	self.process_mode = Node.PROCESS_MODE_ALWAYS
 
 
-# Función de cambio de escena: target es la ruta hacia la escena a cargar
+ # Scene change function: target is the path to the scene to load
 func change_scene(target: String, show_menu = false):
-	# Mostramos el canvas y mostramos animación (desde transparente hacia un color)
+	# We show the canvas and display animation (from transparent to a color)
 	visible = true
 	animation.play("dissolve")
-	# Esperamos a que termine la animación
+	# We wait for the animation to finish
 	await animation.animation_finished
-	# Ocultamos el menu principal
+	# We hide the main menu
 	MainMenu.show_menu(show_menu)
-	# Cargamos la escena
+	# We load the scene
 	get_tree().change_scene_to_file(target)
-	# Mostramos animación (desde un color hacia transparente)
+	# We display animation (from a color to transparent)
 	animation.play_backwards("dissolve")
-	# Esperamos a que termine la animación
+	# We wait for the animation to finish
 	await animation.animation_finished
 	animation.stop()
-	# Volvemos a ocultar el canvas
+	# We hide the canvas again
 	visible = false
 
 
-# Función de reiniciar la escena actual
+# Function to restart the current scene
 func reload_scene():
 	HealthDashboard.visible = true
 	HealthDashboard.restart()
-	# Reiniciamos la escena
+	# We restart the scene
 	get_tree().reload_current_scene()
