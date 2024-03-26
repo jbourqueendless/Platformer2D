@@ -1,54 +1,54 @@
 extends Node2D
-## Clase de Inventario 
-## 
-## Renderización de celdas y objetos de inventario, funcionalidades de agregar nuevos objetos y remover los objetos de inventario ## Revisión de objetos puestos en personaje principal
+## Inventory Class
+##
+## Rendering of inventory cells and objects, functionalities for adding new objects and removing objects from inventory
+## Checking objects placed on the main character
 
 
-# Referencia a todas las "cajas", que contienen objetos
+# Reference to all "boxes" containing objects
 var _item_contents = []
-# Referencia de todos los nombres de objetos que hay en el inventario
+# Reference to all object names in the inventory
 var _item_object_names = []
-# Referencia de los items
+# Reference to the items
 var _item_objects = []
 
 
-@onready var canvas = $CanvasLayer # Canvas principal
+@onready var canvas = $CanvasLayer # Main canvas
 @onready var animation_player = $CanvasLayer/AnimationPlayer # Player
 @onready var grid = $CanvasLayer/Inventory/GridContainer # Grid al cual se añaden elementos
 
 
-# Función de inicialización
+# Initialization function
 func _ready():
-	# Cada "item" recolectado, se agregará dentro de un "contendor"
-	# Este contenedor es un "sprite" que tiene una imagen con un "borde" simulando un marco
-	# Dentro de este "marco" es donde se agregarán los "items"
-	# Para evitar agregar todos los nodos manualmente (6 nodos en este caso), se hizo un ciclo
-	#  que los agregará dinámicamente.
+	# Each collected "item" will be added inside a "container"
+	# This container is a "sprite" that has an image with a "border" simulating a frame
+	# Inside this "frame" is where the "items" will be added
+	# To avoid adding all the nodes manually (6 nodes in this case), a loop was made
+	# that will add them dynamically.
 	for n in 6:
 		var item = load("res://scenes/game/inventory/item_content/item_content.tscn").instantiate()
 		grid.add_child(item) # Agregamos el nodo "marco" a un grid
-		_item_contents.append(item) # Guardamos la referencia del nodo "marco" en un array
+		_item_contents.append(item) # Save the reference of the "frame" node in an array
 
-
-# Función para detectar eventos del teclado o ratón
+# Function to detect keyboard or mouse events
 func _unhandled_input(event):
-	# Definimos escenas donde no debe aparecer el inventario
+	# Define scenes where the inventory should not appear
 	var scenes = ["Splash", "Init"]
-	# Obtenemos el nombre de la escena actual
+	# Get the name of the current scene
 	var actual_scene = get_tree().get_current_scene().name
-	# Si estamos en las escenas definidas no mostramos Inventario
+	# If we are in the defined scenes, do not show the inventory
 	if scenes.find(actual_scene,0) > -1:
 		return
 	
 	if event.is_action_pressed("wheel_up"):
-		# Cuando deslizamos la rueda del ratón hacia arriba, ocultamos el inventario
+		# When we scroll the mouse wheel up, hide the inventory
 		animation_player.play_backwards("down")
 		await animation_player.animation_finished
 		canvas.visible = false
 		get_tree().paused = false
 	elif event.is_action_pressed("wheel_down"):
 		get_tree().paused = true
-		# Cuando deslizamos la rueda del ratón hacia abajo, mostramos el inventario
+		# When we scroll the mouse wheel down, show the inventory
 		if canvas.visible == true:
 			return
 		canvas.visible = true
@@ -56,30 +56,30 @@ func _unhandled_input(event):
 		await animation_player.animation_finished
 
 
-# Función que añade un item al inventario
-# Añadir significa, cargar un elemento (escena) y agregarlo al grid
-# El nombre del item, tiene que existir como una escena
-# Ejemplo del nombre: blue_potion o green_bottle
+# Function to add an item to the inventory
+# Adding means, loading an element (scene) and adding it to the grid
+# The name of the item must exist as a scene
+# Example of name: blue_potion or green_bottle
 func add_item_by_name(_name: String):
-	# Si el item ya existe (ya está agregado), se termina la función
+	# If the item already exists (already added), end the function
 	var index = _item_object_names.find(_name)
 	if index >= 0:
-		# Obtenemos el numero disponible del objeto
+		# Get the available number of the object
 		var _num_available = _item_objects[index].get_num()
-		# Sumamos uno
+		# Add one
 		_num_available += 1
-		# Actualizamos nuevo número
+		# Update new number
 		var _num = _item_objects[index].set_num(str(_num_available))
 		return
 	
-	# Cargamos el recurso
+	# Load the resource
 	var item_to_load = load("res://scenes/game/levels/objects/power_up/power_up_item.tscn")
 	
-	# Si no existe el recurso, se termina la función
+	# If the resource does not exist, end the function
 	if not item_to_load:
 		return
 	
-	# Agregamos el item al grid, y guardamos las referencias (para poder eliminarlo si es requerido)
+	# Add the item to the grid, and save the references (to be able to remove it if required)
 	index = _item_object_names.size()
 	var item = item_to_load.instantiate()
 	var item_content = _item_contents[index]
@@ -89,53 +89,53 @@ func add_item_by_name(_name: String):
 	_item_objects.append(item)
 
 
-# Se elimina un elemento del iventario
-# Eliminar significa, buscar el "nodo" y eliminarlo del grid principal
-# Al eliminar el nodo, todos los demás nodos posteriores, se moverán "hacia atrás"
-# para evitar dejar "espacios vacíos"
-# Ejemplo del nombre: blue_potion o green_bottle
+# Remove an item from the inventory
+# Removing means, finding the "node" and removing it from the main grid
+# When removing the node, all other nodes afterwards will move "backwards"
+# to avoid leaving "empty spaces"
+# Example of name: blue_potion or green_bottle
 func remove_item_by_name(_name: String):
 	var index = _item_object_names.find(_name)
 	if index >= 0:
 		var item_content = _item_contents[index] # Nodo que es un "cuadro" contenedor del item recolectado
 		var item = _item_objects[index] # Nodo que tiene el item recolectado
-		# Ajustamos la cantidad disponible
+		# Adjust the available quantity
 		var _num_available = _item_objects[index].get_num()
 		_num_available -= 1 
 		if _num_available > 0:
 			var _num = _item_objects[index].set_num(str(_num_available))
 			return
 		else:
-			# Removemos el nodo del item
+			# Remove the item node
 			item_content.remove_child(item)
 			item.queue_free(); # Liberamos memoria (porque no lo vamos a volver a usar)
 			
-			# Movemos todos los items "hacia atrás" para que ocupen el espacio vacío
+			# Move all items "backwards" so they occupy the empty space
 			var size = _item_objects.size()
 			for n in range(index, size - 1):
 				var current_content = _item_contents[n]
 				var next_content = _item_contents[n + 1]
 				var next_item = _item_objects[n + 1];
-				# Removemos el item "next_item" (pero no liberamos memoria)
+				# Remove the "next_item" item (but do not free memory)
 				next_content.remove_child(next_item);
-				# El item removido anteriormente, se reutiliza (agrega) en otro nodo
+				# The previously removed item is reused (added) in another node
 				current_content.add_child(next_item);
 			
-			# Quitamos el nombre del listado de "nombres de items"
+			# Remove the name from the list of "item names"
 			_item_object_names.remove_at(index)
 			
-			# Quitamos el nodo, del listado de nodos tipo item
+			# Remove the node from the item type node list
 			_item_objects.remove_at(index)
 
 
-# Elimina todos los elementos del inventario
+# Remove all items from the inventory
 func remove_all_items():
 	var size = _item_object_names.size()
 	for i in size:
 		remove_item_by_name(_item_object_names[size - i - 1])
 
 
-# Retorna un listado de "nombres" de items que están en inventario
+# Return a list of item names in the inventory
 func get_item_list_names():
 	return _item_object_names
 
