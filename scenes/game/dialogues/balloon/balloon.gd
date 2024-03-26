@@ -217,7 +217,7 @@ func _on_response_mouse_entered(item: Control) -> void:
 func _on_response_gui_input(event: InputEvent, item: Control) -> void:
 	if "Disallowed" in item.name: 
 		return
-	# Pasamos a la siguiente linea de diálogo
+	# We move to the next line of dialogue
 	if event is InputEventMouseButton and event.is_pressed() and event.button_index == 1:
 		response_selected.emit(dialogue_line.responses[item.get_index()].text)
 		_next(dialogue_line.responses[item.get_index()].next_id)
