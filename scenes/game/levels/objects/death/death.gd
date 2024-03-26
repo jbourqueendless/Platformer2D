@@ -1,11 +1,11 @@
 extends Area2D
-## Clase que quita la vida al personaje principal
+## Class that removes life from the main character
 ##
-## Quita la vida al personaje principal
+## Removes life from the main character
 
 
 func _on_body_entered(body):
 	if body.is_in_group("player"):
-		# Quitamos vidas
+		# Remove life
 		var _move_script = body.get_node("MainCharacterMovement")
 		_move_script.hit(100)
