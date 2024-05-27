@@ -1201,7 +1201,7 @@ scale = Vector2(4, 2.667)
 texture = SubResource("CompressedTexture2D_i0q63")
 
 [node name="Cloud3" type="Sprite2D" parent="Main/ParallaxBackground/ParallaxLayer1"]
-position = Vector2(949, 39.004)
+position = Vector2(915, 43.75)
 scale = Vector2(4, 2.667)
 texture = SubResource("CompressedTexture2D_legtt")
 
@@ -1232,10 +1232,10 @@ libraries = {
 }
 
 [node name="Parallax2" type="AnimationPlayer" parent="Main/ParallaxBackground"]
-speed_scale = 0.5
 libraries = {
 "": SubResource("AnimationLibrary_hyuae")
 }
+speed_scale = 0.5
 
 [connection signal="pressed" from="Main/CanvasLayer/Options/Init/Button/Button" to="." method="_on_button_pressed"]
 [connection signal="toggled" from="Main/CanvasLayer/Options/Fullscreen/CheckButton" to="." method="_on_check_button_toggled"]
